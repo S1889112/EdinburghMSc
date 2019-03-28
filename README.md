@@ -1,2 +1,1 @@
-# EdinburghMSc
-Coursework from Edinburgh MSc
+# University Coursework
