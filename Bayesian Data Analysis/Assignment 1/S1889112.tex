@@ -1,0 +1,1618 @@
+\documentclass{article}
+
+%%%%%%%%% VERSIONS
+
+%%% V1.4: Change question 2 to have Poisson tau lambda. 
+
+
+%----------------------------------------------------------------------------------------
+%                                                                                           
+%	PREAMBLE                                                                                           
+%                                                                                           
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+%  LOAD PACKAGES                                                                          
+%----------------------------------------------------------------------------------------
+
+\usepackage{listings} % Code
+\usepackage[document]{ragged2e}
+\usepackage{color}
+\usepackage[english]{babel}          % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{graphicx}                % For plots and figures
+\usepackage{hyperref}                % Creates clickable links for references within the PDF document, and for URLs.
+\usepackage{float}                   % Fix figure in place
+\usepackage[margin=0.5in]{geometry}
+\usepackage{fancyvrb}
+
+
+%%%%%%%%%%%%%%%% LISTING COLOUR SCHEME %%%%%%%%%%%%%%%%
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+%----------------------------------------------------------------------------------------
+%  MARGINS                                                                                
+%----------------------------------------------------------------------------------------
+%\addtolength{\oddsidemargin}{-1in}
+%\addtolength{\evensidemargin}{-1in}
+%\addtolength{\textwidth}{1.85in}
+%\addtolength{\topmargin}{-.875in}
+%\addtolength{\textheight}{1.75in}
+
+
+%----------------------------------------------------------------------------------------
+%  STYLE                                                                                  
+%----------------------------------------------------------------------------------------
+
+\setlength\parskip{6pt} % 6pt space between paragraphs.
+
+% Changing subsections
+ \renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\thesection.\alph{subsection}}
+% \renewcommand\thesubsubsection{\thesubsection.\roman{subsubsection}}
+
+ %Get section counter to start at 0 to include introduction
+ \setcounter{section}{1}
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION                                                                         
+%----------------------------------------------------------------------------------------
+
+\title{A Report on \textcolor{red}{INSERT PAPER HERE}}
+\author{S1889112 \\ Ravi Patel}
+\date{\today}
+
+%----------------------------------------------------------------------------------------
+%	BEGIN DOCUMENT                                                                       
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
+
+
+\textbf{Bayesian Data Analysis - Assignment 1 (S1889112)}
+
+\textbf{1a: UK Experts; $\mu\approx1, \mu \in [0,2]$. Conjugate prior. (5)} \label{sec:1a}
+
+We know we have a normal likelihood with known variance, hence a conjugate prior is the normal. Since the mean is believed to be at 1, the hyperparameter for the mean is $\mu_0 = 1$. The experts believe the interval of possible values is [0, 2] so we design the prior such that there is roughly a 95\% prior probability that $\mu$ is in these bounds. As such, we calibrate $\sigma_0$ by $1 + 2\sigma_0 = 2 \iff \sigma_0 = \frac{1}{2} \iff \sigma_0^2 = \frac{1}{4} \iff \tau_0 = 4$. Where $\tau_0 = \sigma^{-2}$
+
+\begin{align}
+L(\mu|y, \sigma^2) &\propto exp\left(\frac{-1}{2\sigma^2} \sum_{i=1}^{10} (y_i - \mu)^2\right), \quad p(\mu) \propto exp\left(\frac{-1}{2\sigma^2_0}(\mu - \mu_0)^2\right) \\
+p(\mu|y) &\propto exp\left(\frac{-1}{\frac{2\sigma^2\sigma^2_0}{\sigma^2 + n\sigma^2_0}}\left(\mu^2 - 2\mu \frac{n\bar{y}\sigma^2_0 + \mu_0\sigma^2}{\sigma^2+n\sigma^2_0}\right)\right) \propto exp\left(\frac{-1}{\frac{2\sigma^2\sigma^2_0}{\sigma^2 + n\sigma^2_0}}\left(\mu - \frac{n\bar{y}\sigma^2_0 + \mu_0\sigma^2}{\sigma^2+n\sigma^2_0}\right)^2\right) \label{eq3}
+\end{align}
+
+This is the general (proportional) posterior for a normal-normal (known variance) model. It is the kernel of a normal with variance $\frac{\sigma^2\sigma^2_0}{\sigma^2 + n\sigma^2_0}$ and mean $\frac{n\bar{y}\sigma^2_0 + \mu_0 \sigma^2}{\sigma^2 + n\sigma^2_0}$. Hence we have the following posterior
+
+\begin{equation}
+\mu|y \sim N\left(\frac{n\bar{y}\sigma^2_0 + \sigma^2\mu_0}{\sigma^2 + n\sigma^2_0}, \frac{\sigma^2\sigma^2_0}{\sigma^2 + n\sigma^2_0}\right) = N\left(\frac{\tau_0\mu_0 + n\tau\bar{y}}{\tau_0 + n\tau}, \frac{1}{\tau_0 + n\tau}\right) = N(1.047, 0.231)
+\end{equation}
+
+Calculations are in Appendix \ref{appA1a}
+
+\textbf{1b: US Experts, mixture prior (5)} \label{sec:1b}
+
+The length of the interval that the experts suspect $\mu$ is suspected to be in is now 4, so we recalculate the variance with the same method as before. The US distribution is centered at 5. That is we have $5 + 2\sigma_1 = 7$, so we have $\sigma_1 = \frac{2}{2} \iff \sigma_1^2 = 1 \iff \tau_1 = 1$.  So we have $(\mu_1, \sigma^2_1) = (5, 1)$. \\
+For the weights below, I set $\pi_0 = \frac{2}{3}$, by using the proportion of the experts who support the initial prior (the UK prior). The mixture prior is as follows:
+
+\begin{equation}
+p(\mu) = \pi_0 \frac{1}{\sqrt{2\pi \sigma^2_0}} exp\left(\frac{-1}{2\sigma^2_0} (\mu - \mu_0)^2 \right) +
+(1-\pi_0) \frac{1}{\sqrt{2\pi \sigma^2_1}} exp\left(\frac{-1}{2\sigma^2_1} (\mu - \mu_1)^2 \right)
+\end{equation}
+
+By conjugacy, the posterior can be written as a weighted sum of the individual posterior components. 
+
+\begin{align}
+p(\mu|y) &= w
+N\left(\frac{n\bar{y}\sigma^2_0 + \sigma^2\mu_0}{\sigma^2 + n\sigma^2_0}, \frac{\sigma^2\sigma^2_0}{\sigma^2 + n\sigma^2_0}\right)
+ + 
+(1-w) N\left(\frac{n\bar{y}\sigma^2_1 + \sigma^2\mu_1}{\sigma^2 + n\sigma^2_1}, \frac{\sigma^2\sigma^2_1}{\sigma^2 + n\sigma^2_1}\right) \label{eq7}\\
+&= wN(1.047, 0.231) + (1-w)N(4.153, 0.750)\\
+& \approx 0.8967 N(1.047, 0.231) + (1- 0.8967) N(4.153, 0.750)
+\label{eq8}
+\end{align}
+
+The weights were estimated by JAGS, with the exact expression as follows:
+
+\begin{equation}
+w = \frac{\pi_0 \int L(\mu|y, \sigma^2)p_1(\mu)d\mu}{\int [\pi_0 p_1(\mu) + (1-\pi_0)p_2(\mu)]L(\mu|y, \sigma^2)d\mu} \label{eq1b.wexact}
+\end{equation}
+
+%\newpage
+\textbf{1c: Posterior sample from unknown variance model  (8)} \label{sec:1c}
+
+We are considering the variance completely unknown (that is, we pay no attention to the fact it was previously 'known' at 30). For conjugacy, we use a gamma prior on tau. For vagueness, we specify the hyperparameters such that they are close to 0 (using the rate parameter). I choose $\tau \sim \Gamma(0.01, 0.01)$. 
+
+The code to obtain samples from the posterior is included in \ref{appA1c}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{Q1/1cSummary.png}
+\caption{Summary Statistics for Posterior Samples} \label{Fig1c}
+\end{figure}
+
+Figure \ref{Fig1c} shows the results of sampling from the posterior. The `Weight' row indicates the posterior weight on the UK expert prior is 96\%. The means for $\mu$ and $\sigma$ are both higher than the medians, suggesting a degree of positive skew. This is expected for $\sigma^2$ as it has a lower bound at 0. The reason $\mu$ is slightly skewed is because occasionally the posterior samples from the US posterior, which puts more density in the higher end of the distribution. 
+
+\textbf{1d: Pr($\mu < 1)$, Pr(At least one negative log-concentration) (6)} \label{sec:1d}
+
+To find the probability $\mu$ is less than 1, we look at the proportion of posterior samples of $\mu$ that are less than 1. 
+
+To find the probability of at least one sample having a negative log concentration, we sample 5 times with the posterior parameters repeatedly, and use the fraction of samples which contain at least one negative log concentration. Note that this could also be done binomially, and the method for doing so is included in the \hyperref[appA1d]{appended code for this subsection}. Results are in the table below:
+
+\vspace*{-2.5mm}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.3\textwidth]{Q1/1dresults.png}
+\caption{Posterior and Posterior Predictive Probabilities} \label{Fig1d}
+\end{figure}
+
+\textbf{1e: Weight as a prior, $\sigma^2$ known (6)} \label{sec:1e}
+
+First note that the `w' referred to in the question is the same as $\pi_0$ in the \ref{sec:1c}. I will use `w' here for the prior to be consistent with the wording of the question. Note that p(w) = $I(w \in (0,1))$
+
+The posterior is now:
+
+\begin{align}
+p(\mu, w | y) &= \frac{p(y|\mu, w)p(\mu|w)p(w)}{p(y)} = \frac{p(y|\mu, w)p(\mu|w)p(w)}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu}\\
+&= \frac{p(y|\mu, w)[wp_1(\mu) + (1-w)p_2(\mu)]p(w)}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \\
+&= \frac{wp(y|\mu, w)p(w)p_1(\mu) + (1-w)p(y|\mu, w)p(w)p_2(\mu)]}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu}
+\end{align}
+
+Note that the individual components of the posterior can be written:
+\begin{align}
+p_i(\mu, w | y) p_i(y) = p(y | \mu, w) p_i(\mu | w) p(w) = p(y | \mu, w) p_i(\mu) p(w)
+\end{align}
+
+Applying this to the numerator of the posterior yields:
+\begin{align}
+p(\mu, w | y) &= \frac{w p_1(\mu,w|y) \int \int p(y|\mu, w)p_1(\mu)p(w) dw d\mu + (1-w) p_2(\mu, w | y) \int \int p(y|\mu, w)p_2(\mu|w)p(w) dw d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \\
+&= w'p_1(\mu, w |y) + (1-w')p_2(\mu, w|y) \\
+&= w'p_1(\mu | y) + (1-w')p_2(\mu | y) \quad \text{Since $p_1$ does not depend on w} \\ 
+\text{Where} \\
+w' &= w\frac{\int \int p(y|\mu, w)p_1(\mu)p(w) dw d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \stackrel{\text{Terms independent of w}}{=} w\frac{\int p(y|\mu, w)p_1(\mu) \int p(w) dw d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \\
+&= w\frac{\int p(y|\mu, w)p_1(\mu) d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu}
+\end{align}
+
+Which is the same as \eqref{eq1b.wexact}. 
+
+To get the marginals, we integrate over the other variable, so:
+\begin{align}
+p(\mu | y) &= \int p(\mu, w | y) dw = p_1(\mu|y) \int w' dw + p_2(\mu|y) \int (1-w') dw \\
+&= p_1(\mu|y) \frac{\int p(y|\mu, w)p_1(\mu) d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \int w dw + p_2(\mu|y) \frac{\int p(y|\mu, w)p_2(\mu) d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu} \int (1-w) dw \\
+&= 0.5\frac{\int p(y|\mu, w)p_1(\mu) d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu}p_1(\mu|y)  + 0.5 \frac{\int p(y|\mu, w)p_2(\mu) d\mu}{\int \int p(y|\mu, w)p(\mu|w)p(w) dw d\mu}p_2(\mu|y) \\
+p(w | y) &= \int p(\mu, w | y) d\mu = w'\int p_1(\mu|y) d\mu + (1-w') \int p_2(\mu | y) d\mu = w' + 1-w' = 1. 
+\end{align}
+
+The marginal distribution for $w$ is unchanged. The marginal distribution for $\mu$ is a weighted sum of the individual conjugate posteriors. 
+
+\newpage
+
+
+%----------------------------------------------------------------------------------------|
+%	BEGINNING OF REPORT																	 |
+%----------------------------------------------------------------------------------------|
+
+\textbf{Question 2}
+
+\textbf{2a: Prior Choice (6)}\label{sec:2a}
+
+The conjugate to the Poisson is the gamma distribution. It is said that the value of $\lambda$ has estimated values ranging from 0.01 to 1000, suggesting we have very little information about the values $\lambda$ can take. As such, I will use a vague gamma prior, meaning hyperparameter values near 0. In particular, $\lambda \sim \Gamma(0.001, 0.001)$. \\
+
+The reason for using such low values, is that if we observe a small number of signals then (say if we used a=b=0.1) the hyperparameters may act as more informative than we wish them to, given the form of the posterior (as seen in equation \eqref{eqgampoispost}. This comes back to the issue of the gamma having a peak at just above 0 as the parameters tend to 0. This may pull values of $\lambda$ to the left if the prioris overly peaked. \\
+
+The particular problem comes with using the rate parameter. Since runs are fractions of years, a value of 0.1 can take up a fairly large proportion of the posterior rate parameter. For example, for half a year, we use a conversion parameter of 0.5. The ratio of the prior to the posterior rate parameter is 0.1/0.6 = 1/6 $\approx$ 17\%. This is quite a large proportion of the posterior parameter considering we wish the prior to be as uninformative as possible. 
+
+Note that this reasoning above is not dependent on any data observed. This exact reasoning can be used before any run is started, as this is entirely based on knowing the length of various runs in advance. 
+
+\textbf{2b: Posterior for $\lambda$ (5)} \label{sec:2b}
+
+We first note that $\lambda$ is in `per-year' units. As such, we add a constant $\kappa$ to the likelihood to account for the varying time periods throughout. That is to say $y_i \sim Poi(\kappa_i \lambda)$, where $\kappa_i$ converts the yearly $\lambda$ to a level consistent with the time period measured over. For example, for O1, $\kappa = \frac{3}{12}$, as this converts the rate to units of  ``per 3 months''. Proportionally, the likelihood, prior, and posterior are as follows (for a single observation):
+
+\vspace{-0.5mm}
+
+\begin{align}
+f(y | \kappa, \lambda) &\propto (\lambda\kappa)^y exp(-\lambda \kappa) \propto (\lambda)^y exp(-\lambda \kappa)\\
+p(\lambda) &\propto \lambda^{a-1}exp(-b\lambda) \\
+p(\lambda | y) &\propto \lambda^{a + y - 1} exp(-\lambda (b+\kappa)) \\
+\lambda | y &\sim \Gamma(a + y, b + \kappa)
+\end{align}
+
+So for multiple observations, the posterior is:
+\begin{equation}
+\lambda | y \sim \Gamma\left(a + \sum_{i=1}^{n}y_i, b + \sum_{i=1}^{n}\kappa_i\right) \label{eqgampoispost}
+\end{equation}
+
+For O1, we have $y_1 = 1, \kappa_1 = \frac{3}{12}$ and the hyperparameters a = b = 0.001, so:
+
+\vspace{-3mm}
+
+\begin{equation}
+\lambda|y \sim \Gamma(0.001 + 3, 0.001 + 3/12) = \Gamma(3.001, 0.251)
+\end{equation} 
+
+
+Hence the mean, variance, and standard deviation can all be calculated exactly. The mean is 11.956 ($\frac{3.001}{0.251}$), the standard deviation is 5.030 ($\frac{3.001}{0.251^2}$), and the symmetric credible interval is [2.467, 28.790], which can be obtained using the \texttt{qgamma} function in R. The posterior is plotted in \hyperref[Fig2b]{Figure 3} with the posterior mean, 95\% symmetric credible interval, and the mean $\pm$ the posterior standard deviation. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.395\textwidth]{Q2/2bplot.png}
+\caption{Posterior Density and Summary Statistics} \label{Fig2b}
+\end{figure}
+
+%\vspace{-10mm}
+
+\textbf{2c: $\mathbf{Pr(\lambda > 15 | y)}$ (4)} \label{sec:2c}
+
+The posterior probability that $\lambda > 15$ is 11.5\%, which was found using the \texttt{pgamma} function in R. Code is in \ref{appA2c}.  
+
+
+\textbf{2d: Previous, using Jeffreys' Prior (5)} \label{sec:2d}
+
+Jeffreys prior is defined as $p_J(\lambda) \propto \sqrt{I(\lambda | y)} = \sqrt{-E\left[\frac{d^2}{d\lambda^2} log(L(\lambda | y))\right]}$. Following the steps through, we get that for the Poisson, $p_J(\lambda) \propto \lambda^{-1/2} = \lambda^{1/2 - 1}exp(-0\lambda)$. This last equality shows that Jeffreys prior is an improper gamma prior, such that $p_J(\lambda) = \Gamma(\frac{1}{2},0)$. Note that the rate parameter being 0 nicely coincides with our reasoning in \hyperref[sec:2a]{2a} about the influence of the rate parameter, completely removing the prior influence.  
+
+Due to the Jeffreys prior being a gamma, we can update it in the same way as in equation \eqref{eqgampoispost}, hence under Jeffreys' prior we have the following posterior:
+
+\vspace{-3.5mm}
+
+\begin{equation}
+\lambda | y \sim \Gamma(0.5 + 3, 0 + 3/12) = \Gamma(3.5, 0.25)
+\end{equation}
+ 
+The comparison is seen in Figure \ref{Fig2dJeffOrigComp}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.31\textwidth]{Q2/2dComp.png}
+\caption{Posterior Summary (Jeffreys vs Original)} \label{Fig2dJeffOrigComp}
+\end{figure}
+
+The values for the mean and standard deviation are both higher than previously, leading to a greater probability that $\lambda > 15$ due to the zero lower bound on $\lambda$ (so there is a higher chance of extremely high values). The symmetric credible interval is wider than previously. Results for the Jeffreys posterior are in Figure \ref{Fig2d}, with the previous mean also included.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.39\textwidth]{Q2/2dplot.png} \vspace{-5mm}
+\caption{Posterior Density and Summary Statistics with Jeffreys Prior} \label{Fig2d}
+\end{figure}
+
+
+%
+%
+%
+%
+%               QUESTION 2 PART E BEGINNING
+%
+%
+%
+%
+
+
+\textbf{2e: Posterior Predictive on O2 data (7)} \label{sec:2e}
+
+Before defining the posterior predictive, let us define $a'$ and $b'$ as the hyperparameters of the posterior distribution from the O1 data. In predicting $\tilde{y}$ we have a new likelihood, as the conversion parameter $\kappa$ changes. The posterior predictive is then as follows ($\tilde{\kappa}$ is the conversion parameter of the value we attempt to predict). 
+
+\begin{align}
+p(\tilde{y}|y) &= \int f(\tilde{y}|\lambda)p(\lambda | y) d\lambda = \int \frac{(\lambda \tilde{\kappa})^{\tilde{y}}exp(-\lambda\tilde{\kappa})}{\tilde{y}!} \frac{(b')^{a'}}{\Gamma(a')}{\lambda^{a' -1}exp(-b'(\lambda))} d\lambda\\
+&= \frac{\tilde{\kappa}^{\tilde{y}}}{\tilde{y}} \frac{(b')^{a'}}{\Gamma(a')} \int \lambda^{a' + \tilde{y}-1}exp(-\lambda(\tilde{\kappa} + b')) d\lambda \\
+&= \frac{(a' + \tilde{y} -1)!}{\tilde{y}!(a'-1)!} \left(\frac{\tilde{\kappa}}{\tilde{\kappa}+b'}\right)^{\tilde{y}} \left(\frac{b'}{\tilde{\kappa} + b'}\right)^{a'} \label{eqmanualnbin}
+\end{align}
+
+Note that R defines the negative binomial (where size=r is the number of successful trials, and p is the probability of success in each trial) density as:
+
+\vspace{-5mm}
+
+\begin{equation}
+P(X = x) = \frac{\Gamma(x+r)}{\Gamma(r)x!}p^n (1-p)^x = \frac{(r+x-1)!}{x!(r-1)!}(1-p)^x p^r \label{eqrnbin}
+\end{equation}
+
+We compare equations \eqref{eqmanualnbin} and \eqref{eqrnbin}, and notice the terms match up exactly. So we have that r = $a'$, x = $\tilde{y}$, and $p = \frac{b'}{\tilde{\kappa}  + b'}$. Hence using the parametrisation given by R, we have:
+
+\vspace{-5mm}
+
+\begin{equation}
+\tilde{y} | y \sim NB\left(r = a', p = \frac{b'}{\tilde{\kappa} + b'}\right)
+\end{equation}
+
+As such we can calculate all the predictive probabilities exactly, using \texttt{pnbinom}. The code is in the appendix, and results are in Figure \ref{Fig2eJeffOrig}, rounded to 4 sf. To calculate the probability that there are more than 5 signals in any individual month, I considered p = Pr(At least 5 signals in any given month) the same as Pr(At least 5 signals in the last month) by independence. Then the probability of observing 4 or less signals in one month is 1-p. Lastly, the probability of observing more than 5 signals in any of the 6 months is 1 - Pr(Observing less than 5 signals in all 6 months), which is $1 - (1-p)^6$. 
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{Q2/2eJeffOrig.png}
+\caption{Impact of Prior on Posterior Predictive} \label{2eFigJeffOrig.png} \label{Fig2eJeffOrig}
+\end{figure}
+
+The results are moderately impacted by the choice of prior. The Jeffreys prior assigns more weight to the higher end of the distribution, resulting in higher probabilities for columns 1, and 3 (I do not consider 4 as extra evidence, since it is entirely based on column 3). 
+
+I agree with the experts, given the probabilities in Figure \ref{Fig2eJeffOrig}. Considering column 4 in particular, observing at least 5 signals in a single month at any point in a 6-month period is only 11\% likely (at most, given both priors). Given that we actually observed this, combined with observing less than 1 signal in 5 months suggests that although the average over 6 months is quite stable, within each month the rate parameter has some variability. 
+
+
+
+\textbf{2f: O3 (8)} \label{sec:2f}
+
+
+
+I will use the original prior, as it has less impact on the hyperparameters of the posterior. To update the prior with O2 information, we use equation \eqref{eqgampoispost}. As a result, the posterior is now:
+
+\begin{equation}
+\lambda | y \sim \Gamma(3.001 + 6, 0.251 + 6/12) = \Gamma(9.001, 0.751)
+\end{equation}
+
+The predictive distributions for both $n_i$ are identical, as they are over the same length of time (hence have the same conversion parameter. So the predictive distributions are as follows:
+
+\begin{equation}
+n_i \sim NB\left(r= 9.001, p = \frac{0.751}{0.5 + 0.751}\right)
+\end{equation}
+
+To conclude time heterogeneity, I will look for a difference `D', such that the probability the difference is greater than `D' is less than 5\%. To find this value, I simulate $n_1$ and $n_2$ from the posterior predictive distributions, take the absolute difference, sort the values, and look at the value at the 95th percentile. This yields a value of 9. So if we observe a value of at least 9, we can be reasonably sure that the rate is not constant over time.  
+
+An alternative way of hypothesis testing is using Bayes factors. We could create 2 models (one with homogeneous time effects, and one with heterogeneous time effects), then examine the Bayes factor (Ratio of posterior odds to prior odds) between the models, and see if either conclusion is supported, using the rule of thumb that $BF_{ij} > 3$ means there is positive evidence for model $i$ over model $j$.  This could be done by having one model where $\lambda$ is constant, and another where its hyperparameters depend on time. 
+
+\newpage
+
+\textbf{Question 3: Bayesian Linear Regression} \label{sec:3}
+
+\textbf{Exploratory Data Analysis} \label{sec:3a}
+
+Firstly, I begin by looking at the distribution of each variable via histograms (as all variables are continuous). This is seen in Figure \ref{Fig3a} (a). We see that the permeability is right-skewed, with some very high values. Area appears approximately normal, perimeter is bimodal, and the shape is also right-skewed. Since the covariates are on vastly different scales, we standardise them, which also helps with convergence. We also use log permeability to reduce the impact of the extreme values of the permeability. Additionally, since linear regression can output any value on the real line, we ensure that predictions for permeability are in $[0, \infty]$ with the logarithm. 
+
+\begin{figure}[!h] 
+    \begin{minipage}[l]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Q3/3aEDAHist.png} 
+    \scriptsize \textbf{a:} Univariate Analysis
+    \end{minipage}
+    \begin{minipage}[l]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Q3/3aEDABiv.png}
+    \scriptsize \textbf{b:} Bivariate Analysis
+    \end{minipage}
+\caption{Histograms and Scatterplots} \label{Fig3a}
+\end{figure}
+
+
+Next, I look at scatterplots of each variable against our dependent variable as seen in  Figure \ref{Fig3a} (b). There is seemingly a linear negative relationship between the perimeter and permeability. It appears as if after a standardised area of 0, the log permeability shifts downwards indicating a dummy effect. There appears to be a diminishing association between the shape and the permeability, but this is likely due to the outlier dragging the curve down. Given the limited number of observations (48), I will only use 3 covariates: The standardised perimeter, the standardised area being greater than 0, and the standardised shape. The reason for not using a dummy for the standardised area is that bivariate relationships ignore the effect of exogenous variables (i.e. the other covariates). Once these relationships are accounted for, it could be that the dummy effect disappears. 
+
+Figure \ref{Fig3freqres} displays the results of a classical linear regression with the selected variables, which will be compared to the Bayesian regression later. It appears that standardised perimeter and area have a statistically significant association with the log permeability, while the shape has no effect. 
+
+Figure \ref{Fig3b} shows the residual plots of the same regression. Using the curve as a guide, there appears to be a quadratic relationship between the residuals and the fitted values. On closer inspection there appear to be 3 clusters of points each with their own negative relationship. Additionally, the QQ plot suggests a departure from normality, particularly when considering the quantiles outside [-1, 1].
+
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.4\textwidth]{Q3/3aEDAfreqcoef.png}
+\caption{Summary of Classical Linear Regression} \label{Fig3freqres}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{Q3/3aEDAfreqres.png}
+\caption{Residual Plots for Classical Linear Regression} \label{Fig3b}
+\end{figure}
+
+\newpage
+
+\textbf{Initial Model Specification, Fit, and Convergence} \label{sec:3b}
+
+Given the departure from normality indicated by the QQ plot, and the outliers, I will use a t-distribution for the likelihood with specified mean ($\mu_i$) and precision ($\tau$). That is:
+
+\begin{align}
+y_i | \mu_i, \tau, \nu, x_i  &\stackrel{ind}{\sim}  t(\nu, \mu_i, \tau) \\
+\mu_i &= \beta_1 + \beta_2 Peri_i +  \beta_3 Area_i + \beta_4 Shape_i \\
+L(y | \mu_i, \tau, \nu) &= \prod_{i=1}^{48} p(y_i | \mu_i, \tau, \nu, x_i)
+\end{align}
+
+I will use priors on $\beta_i$ (normal) and $\tau$ (gamma) to be vague. For now, I consider $\nu = 5$. 
+
+\begin{align}
+\beta_j &\sim N(0, 100000) \quad j = 1, 2, 3, 4 \\
+\tau &\sim \Gamma(0.1, 0.1) \\
+\nu &= 5
+\end{align}
+
+
+To sample from the posterior, I used a burn-in of 100000, and 250000 iterations, with a thinning interval of 50. This left 5000 observations. 3 chains were used, with initialisation left to JAGS. 
+
+Results for summary statistics for this model, and convergence diagnostics are available in figure \ref{Fig3c}. 
+
+We see that the 95\% credible interval for $\beta_2$, and $\beta_3$ does not contain 0, suggesting the respective associations are non-zero. This indicates that the association of log permeability with the perimeter and area is negative and positive respectively. On the other hand, the association with the shape is potentially irrelevant controlling for the other variables, since its credible interval contains 0. 
+
+These results are very similar to the classical model, the direct comparison shown in Figure \ref{Fig3BayesFreqComp}. If we consider the framework of classical hypothesis tests (i.e. if 0 is not in the 95\% interval, there is some effect at the 5\% level), then both models reject the null hypothesis of no effect for the same variables - namely the standardised perimeter and area. Additionally, the coefficients all have reasonably similar values. Lastly, the standard deviations of the Bayesian estimates are larger than (but similar to) the standard errors of the classical model, reflecting our uncertainty about the estimates. 
+
+
+With regards to convergence, the BGR statistic is near 1 for all parameters, which indicates convergence. The trace plots also indicate convergence (the lines all move around the same region, covering the space well). Additionally, we have reasonably low autocorrelation for all parameters, which is reflected in the effective sample sizes (for one chain) of 5000, 2867, 2897, 4018, and 5000 (not shown) It is clear there was some degree of autocorrelation for $\beta_2, \beta_3$ and $\beta_4$ but this is low as indicated by the plots. 
+
+
+
+
+%\newpage
+\begin{figure}[!h]
+%%%%%% PART 1 OF MINIPAGE
+    \begin{minipage}[l]{0.5\textwidth}
+        \begin{Verbatim}[frame = single]
+1. Empirical mean, standard deviation, standard 
+error of the mean:
+
+         Mean   SD     Naive SE   Time-series SE
+beta[1]  5.1806 0.1301 0.001062   0.001094
+beta[2] -2.1985 0.3093 0.002526   0.002593
+beta[3]  1.2837 0.3010 0.002458   0.002523
+beta[4]  0.1322 0.1590 0.001298   0.001298
+sigma2   0.5660 0.1529 0.001249   0.001245
+
+2. Quantiles:
+
+         2.5%    25%      50%     75%     97.5%
+beta[1]  4.9231  5.09484  5.1811  5.2686  5.4356
+beta[2] -2.8272 -2.40067 -2.1851 -1.9891 -1.6110
+beta[3]  0.7114  1.07698  1.2777  1.4849  1.8887
+beta[4] -0.1775  0.02679  0.1319  0.2373  0.4528
+sigma2   0.3323  0.45681  0.5447  0.6506  0.9256
+        \end{Verbatim}
+        \centerline{\textbf{a:} Summary Statistics}\label{res1}
+    \end{minipage}
+    \begin{minipage}[pos=r]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.33\textheight]{Q3/3bGelman.png}
+        \centerline{\textbf{b:} BGR Plots}
+    \end{minipage}
+    
+    
+%%%%%% PART 2 OF MINIPAGE
+    \begin{minipage}[pos=l]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.32\textheight]{Q3/3bTrace.png}
+        \centerline{\textbf{c:} Trace Plots}
+    \end{minipage}
+    \begin{minipage}[pos=r]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.32\textheight]{Q3/3bAuto.png}
+        \centerline{\textbf{d:} Autocorrelation Plots}
+    \end{minipage}
+        
+\caption{Model 1 ($\nu = 5$) Summary and Convergence} \label{Fig3c}
+\end{figure}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.6\textwidth]{Q3/3bBayesFreqComp.png}
+\caption{Bayesian-Classical Comparison} \label{Fig3BayesFreqComp}
+\end{figure}
+
+\newpage
+
+\textbf{Prior Sensitivity}
+
+Following on from this, we check how sensitive the model is to different priors. The errors remain t-distributed. The degrees of freedom $\nu$ are allowed to vary with a vague prior ($\nu \sim \Gamma(0.1, 0.1$). A vague, flat prior is used for the precision ($\tau \sim U(0, 100000)$, and the $\beta_j$ remain normally distributed, but with a lower variance such that $\beta_j \sim N(0, 1000)$. 
+
+I maintain the same burn-in and sample size. Results are in Figure \ref{Fig3dPriorSens}, with a side-by-side comparison with the previous prior in Figure \ref{Fig3dPriorComp}
+
+\begin{figure}[!h]
+%%%%%% PART 1 OF MINIPAGE
+    \begin{minipage}[l]{0.5\textwidth}
+        \begin{Verbatim}[frame = single]
+1. Empirical mean, standard deviation, standard 
+error of the mean:
+
+         Mean   SD     Naive SE   Time-series SE
+beta[1]  5.1871 0.1448 0.001182   0.001269
+beta[2] -2.1717 0.3121 0.002548   0.003114
+beta[3]  1.2589 0.3068 0.002505   0.003125
+beta[4]  0.1324 0.1522 0.001243   0.001315
+nu       8.7122 7.1134 0.058080   0.058079
+sigma2   0.5408 0.1809 0.001477   0.001545
+
+2. Quantiles:
+
+         2.5%    25%      50%     75%     97.5%
+beta[1]  4.9184  5.0882  5.1807  5.2791  5.4931
+beta[2] -2.7906 -2.3762 -2.1710 -1.9642 -1.5576
+beta[3]  0.6328  1.0619  1.2625  1.4610  1.8561
+beta[4] -0.1634  0.0311  0.1312  0.2310  0.4367
+nu       1.4825  3.9456  6.6112 11.0665 28.1677
+sigma2   0.1906  0.4221  0.5309  0.6489  0.9217
+        \end{Verbatim} 
+        \centerline{\textbf{a:} Summary Statistics}
+    \end{minipage}
+    \begin{minipage}[pos=r]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.33\textheight]{Q3/3cGelman.png} \vspace{-2mm}
+        \centerline{\textbf{b:} BGR Plots}
+    \end{minipage}
+    
+    
+%%%%%% PART 2 OF MINIPAGE
+    \begin{minipage}[pos=l]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.3\textheight]{Q3/3cTrace.png}
+        \centerline{\textbf{c:} Trace Plots}
+    \end{minipage}
+    \begin{minipage}[pos=r]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.3\textheight]{Q3/3cAuto.png}
+        \centerline{\textbf{d:} Autocorrelation Plots}
+    \end{minipage} \vspace{-2mm}
+\caption{Model 2 ($\nu \sim \Gamma(0.1, 0.1);\quad \tau \sim U(0, 100000); \quad \beta_j \sim N(0, 1000)$) Summary and Convergence} \label{Fig3dPriorSens}
+\end{figure}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{Q3/3cPriorComparison.png} \vspace{-5mm}
+\caption{Prior Comparison (t-distributions: Model 1 vs Model 2)} \label{Fig3dPriorComp}
+\end{figure}
+
+
+The diagnostics give us no reason to suspect a lack of convergence. Comparing both priors, Figure \ref{Fig3dPriorComp} shows the new model changes very little. The means, standard deviations, and quartiles are almost identical. In general, the parameters for the new prior have slightly higher standard deviation ($\beta_4$ being the exception), but the difference is fairly small. This may be due to the similar distribution, however the results are similar with a normal likelihood (results in Figure \ref{Fig3dPriorComp2}) and the same priors as Model 2. Though the normal likelihood changes the results more than the t-distribution. There is a lower standard deviation on all parameters, but the overall estimated $\sigma^2$ is higher. Given the results of the prior checks, I conclude the model is not sensitive to the prior. 
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{Q3/3cPriorComparisonNormal.png}
+\caption{Comparison of Priors (t-distribution vs Normal)} \label{Fig3dPriorComp2}
+\end{figure}
+
+
+
+\begin{figure}[!h]
+%%%%%% PART 1 OF MINIPAGE
+    \begin{minipage}[l]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{Q3/3eresidindex.png}
+        \centerline{\textbf{a:} Residuals vs Index}
+    \end{minipage}
+    \begin{minipage}[pos=r]{0.5\textwidth}
+        \includegraphics[width=\textwidth, height=0.25\textheight]{Q3/3eQQplot.png}
+        \centerline{\textbf{b:} QQ Plot}
+    \end{minipage}
+    
+    
+%%%%%% PART 2 OF MINIPAGE
+    \begin{minipage}[pos=l]{\textwidth}
+        \includegraphics[width=\textwidth, height=0.32\textheight]{Q3/PostPredChecks.png}
+        \centerline{\textbf{c:} Posterior Predictive Checks}
+    \end{minipage}
+
+        
+\caption{Model 1 ($\nu = 5$) Model Checks} \label{Fig3d}
+\end{figure}
+
+Unfortunately, the residuals seem to illustrate a roughly quadratic relationship with the index, indicating some degree of serial correlation. The QQ plot is adequate in [-2.5, 1], but there is a large outlier in the bottom left, and at the upper end the points diverge from the t(5). The posterior predictive checks are more promising, with the generated samples capturing the summary statistics for the most part. However the maximum value appears to be largely overestimated. Given the performance of the posterior predictive distribution, it seems there is some potential for this model - but given the broken assumption of serial correlation, and the poor QQ plot at the upper end, I conclude alternative models should be explored. Perhaps involving dummies and interaction terms once more observations are available to work with. 
+
+
+\newpage
+
+%----------------------------------------------------------------------------------------|
+%	 Appendix                                                                        |
+%----------------------------------------------------------------------------------------|
+
+\newpage
+\renewcommand\thesubsection{\thesection.\arabic{subsection}}
+%\setcounter{section}{1}
+
+\appendix
+
+\section{Appendix: Question 1} \label{appA1}
+\subsection{1a} \label{appA1a}
+\begin{lstlisting}[language=R]
+#### Load
+
+library(rjags)
+library(gridExtra)
+
+##### 1a (Initial) #####
+
+y <- c(-0.566,  3.74, 5.55, -1.90, -3.54, 
+        5.16 , -1.76, 4.08,  4.62,  0.732)
+n <- length(y)
+mu0  <- 1
+prec <- 1/30
+prec0 <- 4
+
+ybar <- mean(y)
+
+
+norm.post.calc <- function(y, prec, prec.h, mu.h){
+  # y: Data
+  # prec:   Known precision
+  # prec.h: Hyperparameter for precision of mu
+  # mu.h:    Hyperparameter for mean of mu
+  ybar <- mean(y)
+  n    <- length(y)
+  
+  ## Mean:
+  post.mu <- (prec.h*mu.h + n*prec*ybar)/(prec.h + n*prec)
+  ## Variance:
+  post.var <- 1/(prec.h + n*prec)
+  ## Return
+  c(post.mu, post.var)
+}
+
+norm.post.calc(y, prec = prec, prec.h =  prec0, mu.h = mu0)
+\end{lstlisting}
+\subsection{1b} \label{appA1b}
+\begin{lstlisting}[language=R]
+### New hyperparameters:
+prec1  <- 1
+mu1    <- 5
+
+### Posterior hyp. of US prior
+
+norm.post.calc(y, prec=prec, prec.h = prec1, mu.h = mu1)
+
+
+### Weight estimation in JAGS
+mus  <- c(mu0, mu1)
+taus <- c(prec0, prec1)
+pis  <- c(2/3, 1/3)
+
+
+mod.1b <- "model{
+  # Likelihood
+  for (i in 1:n){
+    y[i] ~ dnorm(mu, tau)
+  }
+
+  # Prior
+  mu0 ~ dnorm(mus[1], taus[1])
+  mu1 ~ dnorm(mus[2], taus[2])
+  w   ~ dbinom(pis[1], 1)
+  mu = w*mu0 + (1-w)*mu1
+
+}"
+
+data <- list(y=y, n=n, 
+             mus = mus, taus = taus, pis = pis, 
+             tau = 1/30)
+
+model.1b <- jags.model(textConnection(mod.1b), n.chains = 3, data = data)
+update(model.1b, 10000)
+samp.1b <- coda.samples(model.1b, variable.names = c('mu', 'w'), n.iter = 20000)
+\end{lstlisting}
+\subsection{1c} \label{appA1c}
+\begin{lstlisting}[language=R]
+
+## Hyperparameters on tau
+a <- 0.01
+b <- 0.01
+
+## JAGS MODEL:
+
+mod.1c <- "model{
+
+## Likelihood
+
+for (i in 1:n) {
+  y[i] ~ dnorm(mu, tau)
+}
+
+
+## Prior on mu
+
+mu1 ~ dnorm(mus[1], taus[1])
+mu2 ~ dnorm(mus[2], taus[2])
+I   ~ dbinom(pis[1], 1) # Choose distribution 1 with probability 1. 
+mu = I*mu1 + (1-I)*mu2
+
+## Prior on tau
+tau ~ dgamma(a, b)
+
+## Convert precision to variance
+sig2 = 1/tau
+
+}"
+
+# Data to feed to JAGS
+
+data <- list(y = y, n = n, 
+             mus = mus, taus = taus, pis = pis,
+             a   = a, b   = b)
+
+
+# Compile and initialise model
+
+model.1c <- jags.model(textConnection(mod.1c), n.chains = 5, data = data)
+
+# Update: Select burn-in of 10000
+update(model.1c, 10000)
+
+# Get samples
+
+res.1c <- coda.samples(model.1c, 
+                    variable.names = c("mu", "sig2", 'I'), n.iter = 10000)
+
+
+##### 1c: Posterior mean, median, lower and upper quartiles #####
+
+chain1 <- res.1c[[1]]
+summ.1c <- as.data.frame(t(rbind(apply(chain1, 2, mean), 
+                   apply(chain1, 2, quantile))))
+summ.1c[, c('0%', '100%')] <- NULL
+colnames(summ.1c) <- c('Mean', 'Lower Quartile', 'Median', 'Upper Quartile')
+rownames(summ.1c) <- c('Weight', 'Mu', 'SigmaSq')
+
+#### Send to Image ###
+png(filename = 'Q1/1cSummary.png', width=380,height=100) 
+grid.table(round(summ.1c, 2)) 
+dev.off()
+\end{lstlisting}
+\newpage
+\subsection{1d} \label{appA1d}
+\begin{lstlisting}[language=R]
+## JAGS MODEL:
+
+mod.1d <- "model{
+
+## Likelihood
+
+for (i in 1:n) {
+y[i] ~ dnorm(mu, tau)
+}
+
+
+## Prior on mu
+
+mu1 ~ dnorm(mus[1], taus[1])
+mu2 ~ dnorm(mus[2], taus[2])
+I   ~ dbinom(pis[1], 1) # Choose distribution 1 with probability 1. 
+mu = I*mu1 + (1-I)*mu2
+
+## Prior on tau
+tau ~ dgamma(a, b)
+
+## Convert precision to variance
+sig2 = 1/tau
+
+## PREDICTIONS
+for (i in 1:5){
+  ypred[i]~ dnorm(mu, tau)
+}
+
+}"
+
+# Data to feed to JAGS
+
+data <- list(y = y, n = n, 
+             mus = mus, taus = taus, pis = pis,
+             a   = a, b   = b)
+
+
+# Compile and initialise model
+
+model.1d <- jags.model(textConnection(mod.1d), n.chains = 5, data = data)
+
+# Update: Select burn-in of 10000
+update(model.1d, 20000)
+
+# Get samples
+
+res.1d <- coda.samples(model.1d, 
+                       variable.names = c("mu", 'ypred'), 
+                       n.iter = 20000)
+
+## EXTRACT RELEVANT DATA
+mus       <- res.1d[[1]][, 'mu']
+ypred.mat <- as.matrix(res.1d[[1]][, -1])
+
+## pr(mu < 1)
+mean((mus < 1))
+## 0.3834
+
+## Pr(at least one in sample has negative)
+neg.lc <- apply(ypred.mat, 1, FUN =function(x) sum(x<0) > 0)
+prlo <-  sum(neg.lc)/length(neg.lc)
+## 88%
+
+mu.text <- intToUtf8(956)
+
+label1 <- paste('P(', mu.text, '<1 | y)', sep = '')
+label2 <- paste('P(>0 log concentrations negative | y)')
+
+df.1d <- t(cbind(mean(mus<1), prlo))
+df.1d <- signif(100*df.1d, 3)
+df.1d <- apply(df.1d, 2, paste, '%', sep='')
+rownames(df.1d) <- c(label1, label2)
+colnames(df.1d) <- NULL
+df.1d
+
+### SAVE TABLE
+
+png(filename = 'Q1/1dresults.png', width=300, height=40)
+grid.table(df.1d)
+dev.off()
+
+
+
+## Can also be done binomially
+1 - (sum(res.1d[[1]][, 'ypred[1]'] > 0)/20000)^5
+## 89%
+\end{lstlisting}
+\newpage
+\section{Appendix: Question 2} \label{appA2}
+\subsection{2b} \label{appA2b}
+\begin{lstlisting}[language=R]
+prior.alpha <- 0.001
+prior.beta  <- 0.001
+y           <- 3
+k           <- 3/12
+post.alpha <- prior.alpha + y
+post.beta  <- prior.beta  + k
+
+# Mean, sd, 95\% CI
+mean.2b <- post.alpha/post.beta
+sd.2b   <- sqrt(post.alpha/(post.beta^2))
+sci.2b <- c(qgamma(0.025, post.alpha, post.beta), 
+         qgamma(0.975, post.alpha, post.beta))
+
+# Posterior plot
+
+x   <- seq(0, mean.2b+4*sd.2b, 0.1)
+f.x <- dgamma(x, post.alpha, rate = post.beta)
+xlabel <- intToUtf8(955)
+ylabel <- paste('p(', xlabel, '| y)', sep = '')
+sigma  <- intToUtf8(963)
+
+
+
+png('Q2/2bplot.png', height = 350, width = 500)
+plot(x, f.x, 'l', 
+     xlab = xlabel, ylab = ylabel, main = 'Posterior Density Plot')
+abline(v = mean.2b        , col = 'red')
+abline(v = sci.2b[1]      ,  col = 'green')
+abline(v = sci.2b[2]      ,  col = 'green')
+abline(v = mean.2b + sd.2b,  col = 'blue')
+abline(v = mean.2b - sd.2b,  col = 'blue')
+
+legend('topright',
+       legend=c('Posterior', 'Mean','95% Confidence Interval', paste('Mean +-', sigma)),
+       col=c('black','red','green', 'blue'),lty=1, lwd = c(2,2,2),
+       cex = 0.8)
+dev.off()
+\end{lstlisting}
+\subsection{2c} \label{appA2c}
+\begin{lstlisting}[language=R]
+plambmt15.orig <- pgamma(15, post.alpha, post.beta, lower.tail = FALSE)
+\end{lstlisting}
+\subsection{2d} \label{appA2d}
+\begin{lstlisting}[language=R]
+### SETUP ###
+prior.alpha.J <- 0.5
+prior.beta.J  <- 0
+y             <- 3
+k             <- 3/12
+post.alpha.J  <- prior.alpha.J + sum(y)
+post.beta.J   <- prior.beta.J  + k
+
+### Mean, sd, 95\% CI ###
+
+mean.2d    <- post.alpha.J/post.beta.J
+sd.2d      <- sqrt(post.alpha.J/(post.beta.J^2))
+sci.2d     <- c(qgamma(0.025, post.alpha.J, post.beta.J), 
+                qgamma(0.975, post.alpha.J, post.beta.J))
+
+# Posterior plot
+
+x      <- seq(0, mean.2d+4*sd.2d, 0.1)
+f.x    <- dgamma(x, post.alpha.J, post.beta.J)
+xlabel <- intToUtf8(955)
+ylabel <- paste('p(', xlabel, '| y)', sep = '')
+sigma  <- intToUtf8(963)
+
+### SAVE PLOT ###
+
+png('Q2/2dplot.png', height = 350, width = 500)
+
+### 2D
+plot(x, f.x, 'l', 
+     xlab = xlabel, ylab = ylabel, main = 'Posterior Density Plot')
+abline(v = mean.2d        ,  col = 'red')
+abline(v = sci.2d[1]      ,  col = 'green')
+abline(v = sci.2d[2]      ,  col = 'green')
+abline(v = mean.2d + sd.2d,  col = 'blue')
+abline(v = mean.2d - sd.2d,  col = 'blue')
+
+### 2B
+abline(v = mean.2b        ,  col = 'red',   lty = 3)
+
+
+legend('topright',
+       legend=c('Posterior', 'Mean','95% Confidence Interval', paste('Mean +-', sigma), 'Mean (2b)'),
+       col=c('black','red','green', 'blue', 'red'),lty=c(1,1,1,1,3), lwd = 2,
+       cex = 0.8)
+
+
+dev.off()
+
+
+#### 2D:C ####
+plambmt15.J <- pgamma(15, post.alpha.J, post.beta.J, lower.tail = FALSE)
+
+#### TABULAR COMPARISON
+## originalr esults
+orig <-rbind(mean.2b, sd.2b, sci.2b[1], sci.2b[2], plambmt15.orig)
+
+#### Jeffreys
+jeff <- rbind(mean.2d, sd.2d, sci.2d[1], sci.2d[2], plambmt15.J)
+
+#### Overall
+comp.Q2d <- cbind(orig, jeff)
+lambda <- intToUtf8(955)
+sigma  <- intToUtf8(963)
+gteq   <- intToUtf8(8805)
+
+rownames(comp.Q2d) <- c('Mean', 'SD', '2.5%', '97.5%', 
+                   paste('P(',lambda, gteq, '15)', sep=''))
+colnames(comp.Q2d) <- c('Original', 'Jeffreys')
+
+# Multiply last row by 100 to get as percentage
+comp.Q2d[5, ] <- 100*comp.Q2d[5, ]
+# 4 sf for whole matrix
+comp.Q2d <- signif(comp.Q2d, 4)
+# Add % on the end to show percentage
+comp.Q2d[5, ]  <- sapply(comp.Q2d[5,], paste, '%', sep='')
+# Transpose to take up less space
+comp.Q2d <- t(comp.Q2d)
+
+png('Q2/2dComp.png', height=100, width = 300)
+grid.table(comp.Q2d)
+dev.off()
+\end{lstlisting}
+\subsection{2e} \label{appA2e}
+\begin{lstlisting}[language=R]
+gp.nbinom <- function(ypred, kpred, post.alpha, post.beta, lower.tail = TRUE) {
+  #
+  # Adapts nbinom to work with gamma posterior parameters.
+  #
+  # ypred:       P(X <= ypred) by default
+  # kpred:       Conversion parameter associated with ypred
+  # post.alpha:  Posterior from previous
+  # post.beta:   Posterior from previous
+  # lower.tail:  P(X <= ypred) default
+  
+  r <- post.alpha
+  p <- post.beta/(kpred + post.beta)
+  
+  pnbinom(ypred, size=r, prob=p, lower.tail = lower.tail)
+}
+
+### Various ys and ks (note, vary lower.tail, so not exact)
+
+ypred.6m <- 5; kpred.6m <- 6/12 ## 6 or more  in 6m
+ypred.5m <- 1; kpred.5m <- 5/12 ## 1 or fewer in 5m
+ypred.1m <- 4; kpred.1m <- 1/12 ## 5 or more  in 1m. 
+## 5 or more in at least one month
+## define p = P(5 or more in 1m)
+# (6 choose 0) * p^0 *(1-p)^6 is P(4 or less in all months)
+# Do 1 - this. 
+
+
+
+####### ORIGINAL PRIOR ######
+r <- post.alpha
+
+## 6 or more in O2
+sixplus.orig <- gen.nbinom(ypred.6m, kpred.6m, 
+                           post.alpha=post.alpha, post.beta = post.beta, 
+                           lower.tail = FALSE)
+
+## 1 or fewer in first 5 months: P(ypred <= 1)
+oneminus.orig <- gen.nbinom(ypred.5m, kpred.5m, 
+                            post.alpha=post.alpha, post.beta = post.beta, 
+                            lower.tail = TRUE)
+
+## 5 or more in last month: P(ypred >= 5) = 1- P(ypred <=4)
+fiveplus.orig <- gen.nbinom(ypred.1m, kpred.1m, 
+                            post.alpha = post.alpha, post.beta=post.beta, 
+                            lower.tail = FALSE)
+
+# 5 or more in at least one month
+fourless.all.orig <- 1 - (1-fiveplus.orig)^6
+
+
+####### JEFFREYS PRIOR ######
+
+r <- post.alpha.J
+
+## 6 or more in O2
+sixplus.J <- gen.nbinom(ypred.6m, kpred.6m, 
+                           post.alpha=post.alpha.J, post.beta = post.beta.J, 
+                           lower.tail = FALSE)
+
+## 1 or fewer in first 5 months: P(ypred <= 1)
+oneminus.J <- gen.nbinom(ypred.5m, kpred.5m, 
+                            post.alpha=post.alpha.J, post.beta = post.beta.J, 
+                            lower.tail = TRUE)
+
+## 5 or more in last month: P(ypred >= 5) = 1- P(ypred <=4)
+fiveplus.J <- gen.nbinom(ypred.1m, kpred.1m, 
+                            post.alpha = post.alpha.J, post.beta=post.beta.J, 
+                            lower.tail = FALSE)
+
+# 5 or more in at least one month
+fourless.all.J <- 1 - (1-fiveplus.J)^6
+
+
+### Combine results
+origres <- cbind(sixplus.orig, oneminus.orig, fiveplus.orig, fourless.all.orig)
+jeffres <- cbind(sixplus.J, oneminus.J, fiveplus.J, fourless.all.J)
+
+allres <- rbind(origres, jeffres)
+rownames(allres) <- c('Original', 'Jeffreys')
+colnames(allres) <- c('>=6 (6m)', '<=1 (First 5m)', '>=5 (Last Month)', '>=5 (Any month)')
+
+allres <- signif(100*allres, 4)
+allres <- apply(allres, c(1,2), paste, '%', sep='')
+
+### Write results
+png('Q2/2eJeffOrig.png', height =90, width = 420)
+grid.table(allres)
+dev.off()
+\end{lstlisting}
+
+\newpage
+\section{Appendix: Question 3} \label{appA3}
+
+\subsection{EDA} \label{appA3a}
+\begin{lstlisting}[language=R]
+## Load Data
+
+library(rjags)
+library(e1071)
+library(gridExtra)
+
+
+data("rock")
+area  <- rock$area
+peri  <- rock$peri
+perm  <- rock$perm
+shape <- rock$shape
+
+#### Define Functions ####
+
+#### Plotting ####
+
+
+data.plots <- function(yname, xnames, data, mains = c('')) {
+  i <- 0
+  for (name in xnames) {
+    i = i + 1
+    
+    scatter.smooth(data[, yname] ~ data[, name],xlab=name, ylab = '',main=mains[i])
+   # plot(data[, name], data[, yname], xlab = name, ylab = '', main = mains[i])
+    #abline(lm(data[, yname] ~ data[, name]))
+  }
+}
+
+#### Convergence ####
+
+#### ESS
+ESSplot <- function(sample.obj) {
+  ESS <- data.frame(effectiveSize(sample.obj[[1]]))
+  ESS <- data.frame(variable = row.names(ESS), ESS, row.names = NULL)
+  colnames(ESS) <- c('Variable', 'ESS')
+  ggplot(data = ESS, aes(x = Variable, y = ESS)) +
+    geom_bar(stat = 'Identity') +
+    ggtitle('Effective Sample Size for Variables')
+}
+#### GELMAN.DIAG
+gelman.diag.df <- function(sample){
+  
+  a <- gelman.diag(sample)
+  a <- round(a$psrf, 2)
+  grid.table(a)
+  
+}
+
+## ===========================================================================##
+#################################### RESIDUALS##################################
+## ===========================================================================##
+
+fitted.blr <- function(resmat, X, B, sigma  = NULL, resids = FALSE){
+  # resmat : Results matrix (e.g. as.matrix(samp[[1]]))
+  # X      : X matrix
+  # B      : Beta matrix
+  # sigma  : Standard deviation (only needed for resids = TRUE)
+  # resids : If true, return studentised residuals. 
+  
+  # Observations and number of iterations
+  n <- nrow(X)
+  niterf <- nrow(resmat)
+  
+  # Get individual vectors
+  b1    <- B[, 1]
+  b2    <- B[, 2]
+  b3    <- B[, 3]
+  b4    <- B[, 4]
+  # Hat matrix
+  H <- X %*% solve(t(X) %*% X) %*% t(X)
+  
+  # Y = XB
+  fittedvalues <- X%*% t(cbind(b1, b2, b3, b4))
+  
+  if (resids == TRUE) {
+    
+    studentisedresid=matrix(0, nrow=n, ncol=niterf)
+    
+    # For each posterior sample
+    for(l in 1:niterf){
+      # For each observation
+      for(i in 1:n){
+        # Residual/sigma * 
+        studentisedresid[i,l]=(l.perm[i]-fittedvalues[i,l])/(sigma[l]*sqrt((1-diag(H)[i])))
+      }
+    }
+    
+    return(studentisedresid)
+  } else {
+    return(fittedvalues)
+  }
+}
+  
+## ===========================================================================##
+#################################### SCALING ###################################
+## ===========================================================================##
+
+standardise <- function(x) {(x - mean(x))/sd(x)}
+
+## ===========================================================================##
+################################## EXPLORATORY #################################
+## ===========================================================================##
+
+#### Univariate ####
+
+
+png('Q3/3aEDAHist.png', height = 400, width = 600)
+par(mfrow = c(2,2))
+hist(perm,  main = 'Permeability Histogram', xlab = 'Permeability')
+hist(area,  main = 'Area Histogram',         xlab = 'Area')
+hist(peri,  main = 'Perimeter Histogram',    xlab = 'Perimeter')
+hist(shape, main = 'Shape Histogram',        xlab = 'Shape')
+par(mfrow = c(1,1))
+dev.off()
+
+#### Transformations ####
+
+l.perm       <- log(perm)
+area.norm    <- standardise(area)
+peri.norm    <- standardise(peri)
+shape.norm   <- standardise(shape)
+
+rock.t <- as.data.frame(cbind(area.norm, peri.norm, shape.norm,l.perm))
+
+#### Bivariate ####
+
+png('Q3/3aEDABiv.png', height = 400, width = 600)
+par(mfrow=c(2,2))
+data.plots('l.perm', c('peri.norm', 'area.norm', 'shape.norm'), data=rock.t, 
+           mains = c('Permeability vs Perimeter', 'Permeability vs Area', 
+                     'Permeability vs Shape'))
+par(mfrow=c(1,1))
+dev.off()
+
+#### Frequentist ####
+
+freq <- lm(l.perm ~ peri.norm + area.norm + shape.norm, data = rock.t)
+
+#### Results:
+png('Q3/3aEDAfreqcoef.png', height=102, width = 310)
+grid.table(round(summary(freq)$coef, 3))
+dev.off()
+
+
+### Save residual plot
+png('Q3/3aEDAfreqres.png', height = 300, width = 1200)
+par(mfrow = c(1, 4))
+plot(freq)
+par(mfrow = c(1,1))
+dev.off()
+
+\end{lstlisting}
+\subsection{Model and Convergence} \label{appA3b}
+\begin{lstlisting}[language=R]
+## Define hyperparameters
+beta.mu.prior   <- rep(0, 4)
+beta.tau.prior  <- diag(1/100000, 4)
+tau.shape.prior <- 0.1
+tau.rate.prior  <- 0.1
+
+
+## Data defining
+x     <- cbind(1, rock.t$peri.norm, rock.t$area.norm, rock.t$shape.norm)
+y     <- rock.t$l.perm
+n     <- nrow(x)
+
+## Data list
+data <- list(y = y, x = x, n = n, # The dataset 
+             beta.mu.prior   = beta.mu.prior, 
+             beta.tau.prior  = beta.tau.prior, 
+             tau.shape.prior = tau.shape.prior, tau.rate.prior = tau.rate.prior) 
+
+model_string <-   
+  "model {
+
+# Likelihood
+for (i in 1:n) {
+y[i] ~ dt(mu[i], tau, nu)
+mu[i] = inprod(beta[], x[i, ])
+}
+
+# Prior defined on vector
+beta ~ dmnorm(beta.mu.prior, beta.tau.prior)
+
+## Prior on tau
+tau ~ dgamma(tau.shape.prior, tau.rate.prior)
+
+## Prior on nu (Fixed value now, will change later)
+nu = 5
+
+## Convert precision to variance
+sigma2 <- 1/tau
+
+}"
+
+model <- jags.model(textConnection(model_string), 
+                    data = data, n.chains = 3)
+
+update(model, 100000)
+
+samp <- coda.samples(model = model, variable.names = c('beta', 'sigma2'), n.iter = 250000, thin = 50)
+
+
+## Result Summary
+summary(samp)
+
+## Save BGR plots
+png('Q3/3bGelman.png', height = 600, width = 700)
+gelman.plot(samp)
+dev.off()
+
+
+## Save trace plots
+
+png('Q3/3bTrace.png', height = 600, width = 700)
+par(mfrow = c(3, 2))
+traceplot(samp)
+dev.off()
+
+## Save autocorr plots
+
+png('Q3/3bAuto.png', height = 600, width = 700)
+par(mfrow = c(3, 2))
+autocorr.plot(samp[[1]])
+dev.off()
+
+## Effective Sample Size
+
+effectiveSize(samp[[1]])
+
+## Bayes-Freq comparison
+
+# Keep estimate and p-value
+freq.mat <- summary(freq)$coef[, c(1,2,4)]
+
+# Bayes
+b.mean <- apply(samp[[1]], 2, mean)[1:4]
+b.sd   <- apply(samp[[1]], 2, sd)[1:4]
+b.CI <- apply(samp[[1]],2,  quantile, probs = c(0.025, 0.975))[,1:4]
+bayes.mat <- rbind(b.mean, b.sd, b.CI)
+bayes.mat <- t(bayes.mat)
+
+combined.mat <- round(cbind(freq.mat, bayes.mat),3)
+colnames(combined.mat) <- c('Classical Est', 'Classical SE', 'p-value', 'Bayes Mean', 'Bayes SD', 'Bayes 2.5%', 'Bayes 97.5%')
+
+## SAVE
+png('Q3/3bBayesFreqComp.png', width = 600, height = 100)
+grid.table(combined.mat)
+dev.off()
+
+\end{lstlisting}
+\subsection{Sensitivity} \label{appA3c}
+\begin{lstlisting}[language=R]
+## Define hyperparameters
+beta.mu.prior   <- rep(0, 4)
+beta.tau.prior  <- diag(1/1000, 4)
+tau.lower       <- 0
+tau.upper       <- 100000
+nu.prior        <- 0.1
+
+## Data defining
+x     <- cbind(1, rock.t$peri.norm, rock.t$area.norm, rock.t$shape.norm)
+y     <- rock.t$l.perm
+n     <- nrow(x)
+
+## Data list
+data <- list(y = y, x = x, n = n, # The dataset 
+             beta.mu.prior   = beta.mu.prior, 
+             beta.tau.prior  = beta.tau.prior,
+             tau.lower = tau.lower, tau.upper = tau.upper, 
+             nu.prior = nu.prior)
+
+model_string <-   
+  "model {
+
+# Likelihood
+for (i in 1:n) {
+y[i] ~ dt(mu[i], tau, nu)
+mu[i] = inprod(beta[], x[i, ])
+}
+
+# Prior defined on vector
+beta ~ dmnorm(beta.mu.prior, beta.tau.prior)
+
+## Prior on tau
+tau ~ dunif(tau.lower, tau.upper)
+
+## Prior on nu (Fixed value now, will change later)
+nu ~ dgamma(nu.prior, nu.prior)
+
+## Convert precision to variance
+sigma2 <- 1/tau
+
+}"
+
+model <- jags.model(textConnection(model_string), 
+                    data = data, n.chains = 3)
+
+update(model, 100000)
+
+samp.sens <- coda.samples(model = model, variable.names = c('beta', 'sigma2', 'nu'), n.iter = 250000, thin = 50)
+
+
+
+## ===========================================================================##
+######################## SENSITIVITY DIAGNOSTIC PLOTS ##########################
+## ===========================================================================##
+
+## Result Summary
+summary(samp.sens)
+
+## Save BGR plots
+png('Q3/3cGelman.png', height = 600, width = 700)
+gelman.plot(samp.sens)
+dev.off()
+
+
+## Save trace plots
+
+png('Q3/3cTrace.png', height = 600, width = 700)
+par(mfrow = c(3, 2))
+traceplot(samp.sens)
+dev.off()
+
+## Save autocorr plots
+
+png('Q3/3cAuto.png', height = 600, width = 700)
+par(mfrow = c(3, 2))
+autocorr.plot(samp.sens[[1]])
+dev.off()
+
+## Effective Sample Size
+
+effectiveSize(samp.sens[[1]])
+
+
+## COMPARISON TO PREVIOUS PRIOR
+
+## PREVIOUS PRIOR: MEAN, SD, QUANTILES
+
+previous.mean <- apply(samp[[1]], 2, mean)
+previous.sd   <- apply(samp[[1]], 2, sd)
+previous.qnt  <- apply(samp[[1]], 2, quantile, prob = c(0.25, 0.5, 0.75))
+previous.mat  <- rbind(previous.mean, previous.sd, previous.qnt)
+previous.mat  <- t(previous.mat)
+colnames(previous.mat) <- c('Orig. Mean', 'Orig. Sd', '25%', '50%', '75%')
+previous.mat
+
+
+## NEW PRIOR
+new.mean <- apply(samp.sens[[1]], 2, mean)
+new.sd   <- apply(samp.sens[[1]], 2, sd)
+new.qnt  <- apply(samp.sens[[1]], 2, quantile, prob = c(0.25, 0.5, 0.75))
+new.mat  <- rbind(new.mean, new.sd, new.qnt)[, c(1,2,3,4,6)]
+new.mat  <- t(new.mat)
+colnames(new.mat) <- c('New Mean', 'New Sd', '25%', '50%', '75%')
+
+## Comparison matrix
+prior.comp.mat <- round(cbind(previous.mat, new.mat), 3)
+
+## Save
+png('Q3/3cPriorComparison.png', height = 150, width = 605)
+grid.table(prior.comp.mat)
+dev.off()
+
+## ===========================================================================##
+############################# SENSITIVITY (NORMAL) #############################
+## ===========================================================================##
+
+## Define hyperparameters
+beta.mu.prior   <- rep(0, 4)
+beta.tau.prior  <- diag(1/1000, 4)
+tau.lower       <- 0
+tau.upper       <- 100000
+
+
+## Data defining
+x     <- cbind(1, rock.t$peri.norm, rock.t$area.norm, rock.t$shape.norm)
+y     <- rock.t$l.perm
+n     <- nrow(x)
+
+## Data list
+data <- list(y = y, x = x, n = n, # The dataset 
+             beta.mu.prior   = beta.mu.prior, 
+             beta.tau.prior  = beta.tau.prior,
+             tau.lower = tau.lower, tau.upper = tau.upper)
+
+model_string <-   
+  "model {
+
+# Likelihood
+for (i in 1:n) {
+y[i] ~ dnorm(mu[i], tau)
+mu[i] = inprod(beta[], x[i, ])
+}
+
+# Prior defined on vector
+beta ~ dmnorm(beta.mu.prior, beta.tau.prior)
+
+## Prior on tau
+tau ~ dunif(tau.lower, tau.upper)
+
+## Convert precision to variance
+sigma2 <- 1/tau
+
+}"
+
+model <- jags.model(textConnection(model_string), 
+                    data = data, n.chains = 3)
+
+update(model, 100000)
+
+samp.sens.norm <- coda.samples(model = model, variable.names = c('beta', 'sigma2'), n.iter = 250000, thin = 50)
+
+##### NORMAL DISTRIBUTION COMPARISON
+
+## PREVIOUS PRIOR: MEAN, SD, QUANTILES
+
+previous.mean <- apply(samp[[1]], 2, mean)
+previous.sd   <- apply(samp[[1]], 2, sd)
+previous.qnt  <- apply(samp[[1]], 2, quantile, prob = c(0.25, 0.5, 0.75))
+previous.mat  <- rbind(previous.mean, previous.sd, previous.qnt)
+previous.mat  <- t(previous.mat)
+colnames(previous.mat) <- c('Orig. Mean', 'Orig. Sd', '25%', '50%', '75%')
+previous.mat
+
+
+## NEW PRIOR
+new.mean.norm <- apply(samp.sens.norm[[1]], 2, mean)
+new.sd.norm   <- apply(samp.sens.norm[[1]], 2, sd)
+new.qnt.norm  <- apply(samp.sens.norm[[1]], 2, quantile, prob = c(0.25, 0.5, 0.75))
+new.mat.norm  <- rbind(new.mean, new.sd, new.qnt)
+new.mat.norm  <- t(new.mat)
+colnames(new.mat.norm) <- c('New Mean', 'New Sd', '25%', '50%', '75%')
+
+## Comparison matrix
+prior.comp.mat <- round(cbind(previous.mat, new.mat), 3)
+
+## Save
+png('Q3/3cPriorComparisonNormal.png', height = 150, width = 605)
+grid.table(prior.comp.mat)
+dev.off()
+
+\end{lstlisting}
+\subsection{Model Checks} \label{App3:Model Checks}
+\begin{lstlisting}[language=R]
+## ===========================================================================##
+########################## STUDENTISED RESIDUALS ###############################
+## ===========================================================================##
+
+# Use one chain for the results
+
+resmat <- as.matrix(samp[[1]])
+
+# Individual parameter vectors
+b1    <- resmat[, 1]
+b2    <- resmat[, 2]
+b3    <- resmat[, 3]
+b4    <- resmat[, 4]
+sigma <- sqrt(resmat[, 5])
+
+# beta matrix
+B <- cbind(b1, b2, b3, b4)
+
+# residuals and fitted
+studentisedresid <- fitted.blr(resmat = resmat, X = x, B = B, 
+                               sigma = sigma, resids = TRUE)
+fittedvalues     <- fitted.blr(resmat = resmat, X = x, B = B, 
+                               sigma = NULL, resids = FALSE)
+
+## ===========================================================================##
+############################ RESIDUAL ANALYSIS #################################
+## ===========================================================================##
+
+# posterior mean of studentised residuals
+# Get mean of each row, so we have 48 residuals
+
+studentisedresidm <- apply(studentisedresid, 1, mean)
+
+## Index plot
+
+png('Q3/3eresidindex.png', height = 350, width = 500)
+plot(studentisedresidm, main = 'Residuals vs Index')
+dev.off()
+
+#QQ-plot
+
+png('Q3/3eQQplot.png', height=350, width=500)
+qqplot(x=qt(ppoints(n), df=5), 
+       y=studentisedresidm, 
+       main="QQ Plot (T- Distribution)",
+       xlab="Theoretical Quantiles", 
+       ylab= "Sample Quantiles")
+qqline(studentisedresidm, distribution=function(p) qt(p, df=5), col="red", lw=2)
+dev.off()
+
+
+
+######## PREDICTIVE CHECKS
+######## REPLICATE DATA
+
+#Now do some predictive checks
+#First replicate the data
+
+
+niterf <- nrow(resmat)
+
+yrep=matrix(0,nrow=n,ncol=niterf)
+for(l in 1:niterf){
+  for(i in 1:n){
+    yrep[i,l]=rnorm(1,b1[l]*x[i,1]+b2[l]*x[i,2]+b3[l]*x[i,3]+b4[l]*x[i,4],sigma[l])
+  }
+}
+
+#Compute posterior preditive distribution of important stats
+yrepmin  = apply(yrep,2,min)
+yrepmax  = apply(yrep,2,max)
+yreplow  = apply(yrep,2,quantile, probs = c(0.25))
+yrepmed  = apply(yrep,2,median)
+yrepupp  = apply(yrep,2,quantile, probs = c(0.75))
+ypredkrt = apply(yrep, 2, kurtosis)
+
+
+png('Q3/3ePostPredChecks.png', height=500, width=700)
+par(mfrow = c(2, 3))
+##### Posterior histograms
+hist(yrepmin, col = 'gray40', main = 'Predictive Distribution for Minimum')
+  abline(v = min(l.perm), col = 'red', lwd = 2)
+
+hist(yrepmax, col = 'gray40', main = 'Predictive Distribution for Maximum')
+  abline(v = max(l.perm), col = 'red', lwd = 2)
+
+hist(yreplow, col = 'gray40', main = 'Predictive Distribution for Lower Quartile')
+  abline(v = quantile(l.perm, probs = c(0.25)), col = 'red', lwd = 2)
+  
+hist(yrepmed, col = 'gray40', main = 'Predictive Distribution for Median')
+  abline(v = median(l.perm), col = 'red', lwd = 2)
+  
+hist(yrepupp, col = 'gray40', main = 'Predictive Distribution for Upper Quartile')
+  abline(v = quantile(l.perm, probs = c(0.75)), col = 'red', lwd = 2)
+  
+hist(ypredkrt, col = 'gray40', main = 'Predictive Distribution for Kurtosis')
+  abline(v = kurtosis(l.perm), col = 'red', lwd = 2)
+dev.off()
+\end{lstlisting}
+
+
+\end{document}
