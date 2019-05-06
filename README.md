@@ -2,6 +2,10 @@
 
 ### To do
 
-\begin{itemize}
-\item{Test}
-\end{itemize}
+* Upload BDA2
+* Upload BDA1 feedback
+* Upload IDA, Stat. Prog., 
+* Upload course materials elsewhere
+* Upload credit scoring
+  * Ask for possible feedback on A2. 
+* Learn markdown (very low priority)
