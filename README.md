@@ -2,7 +2,6 @@
 
 ### To do
 
-* Upload BDA2 feedback
 * Upload BDA1 feedback
 * Upload IDA, Stat. Prog., 
 * Upload course materials elsewhere
