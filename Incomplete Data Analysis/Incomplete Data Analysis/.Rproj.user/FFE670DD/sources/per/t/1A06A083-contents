@@ -1,0 +1,48 @@
+#dataset (pain severity and depression scores)
+data=data.frame("PS"=c(4,6,7,7,8,9,9,10,10,11,12,14,14,14,15,16,16,17,18,23),"DEP"=c(NA,NA,14,11,NA,NA,11,NA,16,9,9,14,16,21,14,14,18,19,21,18))
+
+#mean of the observed depression score
+mean(data$DEP,na.rm=TRUE)
+
+#plot of slide 20
+plot(data$PS,data$DEP,xlim=c(0,25),ylim=c(0,25),xlab="Pain Severity",ylab="Depression")
+points(4,15,col="firebrick1")
+points(6,15,col="firebrick1")
+points(8,15,col="firebrick1")
+points(9,15,col="firebrick1")
+points(10,15,col="firebrick1")
+
+#regression model used for condtional mean imputation and stochastic regression imputation
+fit=lm(DEP~PS,data=data)
+fit
+summary(fit)
+
+#to predict the missing values
+require(mice)
+predict(fit,newdata=ic(data))
+
+#plot of slide 23
+plot(data$PS,data$DEP,xlim=c(0,25),ylim=c(0,25),xlab="Pain Severity",ylab="Depression")
+points(4,9.686299,col="firebrick1")
+points(6,10.801062,col="firebrick1")
+points(8,11.915824,col="firebrick1")
+points(9,12.473205,col="firebrick1")
+points(10,13.030586,col="firebrick1")
+
+#check assumptions of linear regression
+plot(mod$fitted.values,rstandard(mod),xlab="Fitted values",ylab="Studentized residuals")
+
+qqnorm(rstandard(fit),xlim=c(-3,3),ylim=c(-3,3))
+qqline(rstandard(fit),col=2)
+
+#imputed values for stochastic regression imputation
+set.seed(1)
+predict(fit,newdata=ic(data))+rnorm(5,0,3.211)
+
+#plot of slide 27
+plot(data$PS,data$DEP,xlim=c(0,25),ylim=c(0,25),xlab="Pain Severity",ylab="Depression")
+points(4,7.674756 ,col="firebrick1")
+points(6,11.390740,col="firebrick1")
+points(8,9.232621,col="firebrick1")
+points(9,17.595652 ,col="firebrick1")
+points(10,14.088636 ,col="firebrick1")

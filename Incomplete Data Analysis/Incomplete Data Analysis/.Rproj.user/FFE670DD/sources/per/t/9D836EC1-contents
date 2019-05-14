@@ -1,0 +1,88 @@
+library(magrittr)
+
+df <- read.table(file = 'L4Data.txt', sep = ' ', header = TRUE)
+
+df$Missing <- ifelse(is.na(df$SystolicBloodPressure.mmHg), 1, 0)
+
+## Question 1 ####
+
+# Carry out a CCA to find mean of SBP overall, and by sex. 
+# Also compute associated standard error of the mean
+
+CCA.SBP.mean <- mean(df$SystolicBloodPressure.mmHg, na.rm = TRUE)
+
+df.male <- df[df$Sex == 'Male',]
+df.female <- df[df$Sex == 'Female',]
+
+CCA.SBP.mean.male <- mean(df.male$SystolicBloodPressure.mmHg, na.rm = TRUE)
+CCA.SBP.mean.female <- mean(df.female$SystolicBloodPressure.mmHg, na.rm = TRUE)
+
+
+# Standard error is sigma/sqrt(n)
+
+CCA.SBP.sd <- (1/length(df)) 
+
+CCA.SBP.sd        <- sd(df$SystolicBloodPressure.mmHg, na.rm = TRUE)
+CCA.SBP.sd.male   <- sd(df.male$SystolicBloodPressure.mmHg, na.rm = TRUE)
+CCA.SBP.sd.female <- sd(df.female$SystolicBloodPressure.mmHg, na.rm = TRUE)
+
+CCA.n <- sum(!is.na(df$SystolicBloodPressure.mmHg))
+CCA.n.male <- sum(!is.na(df.male$SystolicBloodPressure.mmHg))
+CCA.n.female <- sum(!is.na(df.female$SystolicBloodPressure.mmHg))
+
+
+CCA.SBP.se <- CCA.SBP.sd/sqrt(CCA.n)
+CCA.SBP.se.male <- CCA.SBP.sd.male/sqrt(CCA.n.male)
+CCA.SBP.se.female <- CCA.SBP.sd.female/sqrt(CCA.n.female)
+
+
+
+## Question 2 ####
+
+# Imputing missing values by mean imputation. Use these values to estimate mean sstolic BP with corresponding s.e.
+
+# Note: Have mean from CCA.SBP.mean
+# Perform imputation
+df$SystolicBloodPressure.mmHg <- ifelse(is.na(df$SystolicBloodPressure.mmHg), CCA.SBP.mean, df$SystolicBloodPressure.mmHg)
+
+# Mean will be same
+
+CCA.SBP.mean <- mean(df$SystolicBloodPressure.mmHg)
+
+# Standard error
+
+CCA.SBP.sd <- sd(df$SystolicBloodPressure.mmHg)
+
+CCA.n <- length(df$SystolicBloodPressure.mmHg)
+
+CCA.SBP.se <- CCA.SBP.sd/sqrt(CCA.n)
+
+
+## Question 3 ####
+
+# Impute missing values for SBP by RI
+# Regress on sex+age
+# Write down equation used, and four imputed values obtained
+# Use these to estimate mean SBP and associated standard error
+
+# Perform regression imputation
+
+
+Q3.model <- df[df$Missing!=1,]%>%
+              lm(SystolicBloodPressure.mmHg ~ Age + Sex, data=.)
+
+
+ 
+
+testset <- df[df$Missing == 1,]
+
+predictions <- df[df$Missing==1, ] %>%
+                 predict(Q3.model, newdata = .)    
+
+# 
+  
+  
+## Question 4 ####
+
+## Question 5 ####
+

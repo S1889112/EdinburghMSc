@@ -1,0 +1,6 @@
+"0","paste0('The mean recovery time is', mean.cca, 'and it\'s associated standard error is', se.cca, '.', 'The correlation between recovery time and the log dose is', cor.recov.dose,'.', 'The correlation between recovery time and blood pressure is', cor.recov.bloodp,'.', sep=' ')
+"
+"1","[1]"
+"1"," ""The mean recovery time is19.2727272727273and it's associated standard error is2.44184303398015.The correlation between recovery time and the log dose is0.23912557669433.The correlation between recovery time and blood pressure is-0.0195286212600658. """
+"1","
+"

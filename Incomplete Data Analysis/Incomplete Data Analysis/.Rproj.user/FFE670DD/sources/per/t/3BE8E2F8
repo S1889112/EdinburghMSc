@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1542574032287.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "36222816",
+    "id" : "3BE8E2F8",
+    "lastKnownWriteTime" : 1540139513,
+    "last_content_update" : 1540139513,
+    "path" : "~/Documents/1) Documents (Academics and Programming)/MSc Statistics with Data Science/Incomplete Data Analysis/Week 4/airquality_nonlinear.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "7,26",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

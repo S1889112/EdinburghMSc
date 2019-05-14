@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1542574052924.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3569988128",
+    "id" : "1A06A083",
+    "lastKnownWriteTime" : 1540139531,
+    "last_content_update" : 1542574527621,
+    "path" : "~/Documents/1) Documents (Academics and Programming)/MSc Statistics with Data Science/Incomplete Data Analysis/Week 3/single_imputation_example.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "32,0",
+        "scrollLine" : "12"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

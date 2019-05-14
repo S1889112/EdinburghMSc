@@ -1,0 +1,31 @@
+data(airquality)
+names(airquality)
+
+#pdf("scatterairquality.pdf")
+plot(airquality$Wind,airquality$Ozone,xlab="Wind",ylab="Ozone",lwd=2)
+#dev.off()
+
+fit=lm(Ozone~Wind,data=airquality)
+
+#pdf("scatterairqualityfit.pdf")
+plot(airquality$Wind,airquality$Ozone,xlab="Wind",ylab="Ozone",lwd=2)
+abline(fit,lwd=2,col="red")
+#dev.off()
+
+#residuals plots
+stdres=rstandard(fit)
+plot(fit$fitted.values,stdres,xlab="Fitted values",ylab="Studentized residuals")
+
+#fit with quadratic term on wind
+fit2=lm(Ozone~Wind+I(Wind^2),data=airquality)
+summary(fit2)
+
+#residuals plots of the new fit
+stdres2=rstandard(fit2)
+plot(fit2$fitted.values,stdres2,xlab="Fitted values",ylab="Studentized residuals")
+
+#pdf("scatterairqualitynonlinear.pdf")
+gridwind=seq(0,22,len=100)
+plot(airquality$Wind,airquality$Ozone,lwd=2,xlab="Wind",ylab="Ozone")
+lines(gridwind,162.5722-19.4439*gridwind+0.6487*(gridwind^2),col="blue2",lwd=2)
+#dev.off()
