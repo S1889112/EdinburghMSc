@@ -2,10 +2,7 @@
 
 ### To do
 
-* Upload BDA2 feedback
-* Upload BDA1 feedback
-* Upload IDA, Stat. Prog., 
-* Upload course materials elsewhere
+* Upload IDA, Stat. Prog. etc.
 * Upload credit scoring
   * Ask for possible feedback on A2. 
 * Learn markdown (very low priority)
