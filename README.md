@@ -2,5 +2,5 @@
 
 ### To do
 
-* A2 feedback?
-* Learn markdown (very low priority)
+* Credit Scoring A2 feedback?
+* Redo BDA coursework in Stan (personal)
