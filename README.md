@@ -2,5 +2,4 @@
 
 ### To do
 
-* Credit Scoring A2 feedback?
-* Redo BDA coursework in Stan (personal)
+* Upload dissertation after cleaning up folders (i.e. removing any personal information). 
