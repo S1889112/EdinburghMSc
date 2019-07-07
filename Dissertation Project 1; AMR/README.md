@@ -1,3 +1,4 @@
-# Open the R project to set the working directory. 
+# Small Instructions and Help
 
-Run code in setup folder in order. Code should be self-contained, in that other files are sourced when dependencies are missing.
+* Open R project to set working directory
+* Run code in setup folder in order. Code should be self-contained, in that other files are sourced when dependencies are missing.
