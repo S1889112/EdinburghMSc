@@ -6,3 +6,4 @@
 ## Side Notes:
 
 Template folder contains image for LaTeX document. 
+Code_2 missing - was a folder with experiments inside, did not feed into final report. It involved some of the prototyping for Code_3. 
